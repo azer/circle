@@ -1,0 +1,29 @@
+{
+  "name": "json-resources",
+  "version": "0.0.0",
+  "description": "Minimalistic JSON API Server",
+  "main": "index.js",
+  "scripts": {
+    "test": "fox"
+  },
+  "keywords": [
+    "json",
+    "api",
+    "server"
+  ],
+  "repository": {
+    "url": "git@github.com:azer/json-resources.git",
+    "type": "git"
+  },
+  "author": "Azer Koçulu <azer@kodfabrik.com>",
+  "license": "BSD",
+  "dependencies": {
+    "property": "0.0.0",
+    "local-debug": "0.0.0"
+  },
+  "devDependencies": {
+    "fox": "*",
+    "request": "*",
+    "get-json": "*"
+  }
+}
