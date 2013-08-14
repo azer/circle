@@ -2,7 +2,7 @@
 
 Minimalistic JSON API Server. Takes care of all you need to get done a simple API server.
 
-**qs and post data parsing hasnt implemented yet**
+**qs and post data parsing isnt implemented yet**
 
 ## Install
 
