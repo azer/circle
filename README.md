@@ -17,7 +17,7 @@ server = resources({
   person: person,
   company: company,
   create: create,
-  default: person
+  '*': person
 })
 
 server.start('localhost', 8080)
