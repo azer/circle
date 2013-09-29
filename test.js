@@ -45,7 +45,6 @@ describe('a server', function(){
     });
   });
 
-
   after(function(done){
     server.close();
     done();
