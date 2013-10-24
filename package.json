@@ -1,6 +1,6 @@
 {
   "name": "json-resources",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Minimalistic JSON API Server",
   "main": "index.js",
   "scripts": {
@@ -19,7 +19,8 @@
   "license": "BSD",
   "dependencies": {
     "property": "0.0.0",
-    "local-debug": "0.0.0"
+    "local-debug": "0.0.0",
+    "post-data": "0.0.0"
   },
   "devDependencies": {
     "fox": "*",

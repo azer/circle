@@ -15,6 +15,15 @@ describe('a server', function(){
     done();
   });
 
+  it('welcomes', function(done){
+    getJSON('http://localhost:1339', function (error, res) {
+      if(error) return done(error);
+      expect(res.welcome).to.equal(true);
+      expect(res.ok).to.not.exist;
+      done();
+    });
+  });
+
   it('serves given data', function(done){
     getJSON('http://localhost:1339/human/1', function (error, res) {
       expect(error).to.not.exist;
@@ -93,16 +102,12 @@ var animals = {
   4: { name: 'Bar', age: 3 }
 };
 
-function human (params, reply) {
-  var id = params[0];
-
+function human (reply, id) {
   if (!humans[id]) reply({ not_found: true }, 404);
-
-  reply(undefined, reply(undefined, humans[id]));
+  reply(undefined, humans[id]);
 }
 
-function animal (params, reply) {
-  var id = params[0];
+function animal (reply, id) {
   if (!animals[id]) reply({ not_found: true }, 404);
-  reply(undefined, reply(undefined, animals[id]));
+  reply(undefined, animals[id]);
 }
