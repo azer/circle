@@ -29,8 +29,8 @@ api.start(8080, 'localhost')
 Accepting requests to URLs like `/person/john/smith?email=john@smith.com`
 
 ```js
-function person (reply, params) {
-  reply(undefined, { name: params.name, surname: params.surname, email: reply.qs.email })
+function person (reply, params, qs) {
+  reply(undefined, { name: params.name, surname: params.surname, email: qs.email })
 }
 ```
 
