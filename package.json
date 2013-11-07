@@ -1,6 +1,6 @@
 {
   "name": "circle",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Minimalistic JSON API Server",
   "main": "index.js",
   "scripts": {
