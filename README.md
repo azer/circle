@@ -80,14 +80,14 @@ Circle outputs the response in JSONP format for requests made by passing "callba
 Circle servers will output JSON by default. To format the output for specific "Accept" header:
 
 ```js
-api.format('person', 'text/plain', function (error, person) {
-  if (error) return 'Error: ' + error.message;
+api.format('/person/:name/:surname', 'text/plain', function (response) {
+  if (response.error) return 'Error: ' + response.error;
 
-  return 'Name: ' + person.name + ' Surname: ' + person.surname + ' E-Mail: ' + person.email;
+  return 'Name: ' + response.result.name + ' Surname: ' + response.result.surname + ' E-Mail: ' + response.result.email;
 });
 ```
 
-Will output when `curl http://localhost:8080/person/john/smith?email=`
+Will output below for `curl http://localhost:8080/person/john/smith?email=john@smith.com`:
 
 ```js
 Name: John
