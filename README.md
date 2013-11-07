@@ -16,10 +16,9 @@ $ npm install circle
 circle = require('circle')
 
 api = circle({
-  'person/:name/:surname': person,
-  'company': company,
-  'create': create,
-  '*': person
+  '/person/:name/:surname': person,
+  '/company/:id': company,
+  '/': home
 })
 
 api.start(8080, 'localhost')
