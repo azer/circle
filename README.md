@@ -29,8 +29,8 @@ api.start(8080, 'localhost')
 Accepting requests to URLs like `/person/john/smith?email=john@smith.com`
 
 ```js
-function person (reply, params, qs) {
-  reply(undefined, { name: params.name, surname: params.surname, email: qs.email })
+function person (reply, match) {
+  reply(undefined, { name: match.params.name, surname: match.params.surname, email: match.params.query.email })
 }
 ```
 
@@ -52,7 +52,7 @@ This will output:
 Producing errors:
 
 ```
-function company (params, reply) {
+function company (reply, match) {
   reply({ not_implemented: true }) // returns error
 }
 ```
@@ -60,8 +60,8 @@ function company (params, reply) {
 It handles POST data and file uploads nicely:
 
 ```js
-function create (reply, params, post, files) {
-  params
+function create (reply, match, post, files) {
+  match.params
   // => { name: 'foo', age: 21 }
 
   files

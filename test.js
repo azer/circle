@@ -81,7 +81,7 @@ describe('a server', function(){
 
   it('creates a new human by posting data', function(done){
     var options = {
-      url: 'http://localhost:1339/createHuman',
+      url: 'http://localhost:1339/createHuman?foo=bar',
       form: { id: 22, name: 'foo', age: 30 }
     };
 
@@ -89,6 +89,7 @@ describe('a server', function(){
       expect(error).to.not.exist;
       var re = JSON.parse(body);
       expect(re.result.created).to.be.true;
+      expect(re.result.foo).to.equal('bar');
       expect(humans[22].name).to.equal('foo');
       delete humans[22];
       done();
@@ -141,21 +142,21 @@ var animals = {
   4: { name: 'Bar', age: 3 }
 };
 
-function human (reply, params) {
-  if (!humans[params.id]) return reply({ message: { 'not-found': true } }, 404);
-  reply(undefined, humans[params.id]);
+function human (reply, match) {
+  if (!humans[match.params.id]) return reply({ message: { 'not-found': true } }, 404);
+  reply(undefined, humans[match.params.id]);
 }
 
-function animal (reply, params) {
-  if (!animals[params.id]) return reply({ message: { 'not-found': true } }, 404);
-  reply(undefined, animals[params.id]);
+function animal (reply, match) {
+  if (!animals[match.params.id]) return reply({ message: { 'not-found': true } }, 404);
+  reply(undefined, animals[match.params.id]);
 }
 
-function fruit (reply, params) {
-  reply(undefined, { kind: params.kind, price: params.price });
+function fruit (reply, match) {
+  reply(undefined, { kind: match.params.kind, price: match.params.price });
 }
 
-function createHuman (reply, params, human, files) {
+function createHuman (reply, match, human, files) {
   humans[human.id] = human;
-  reply(undefined, { created: true });
+  reply(undefined, { created: true, foo: match.qs.foo });
 }
