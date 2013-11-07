@@ -1,25 +1,35 @@
-var resources = require("./");
+var circle = require("./");
 var request = require("request");
 var getJSON = require("get-json");
 
 describe('a server', function(){
   var server;
+  var api;
 
   before(function(done){
-    resources({
-      'human': human,
-      'animal': animal
+    api = circle({
+      '/human/:id': human,
+      '/animal/:id': animal,
+      '/createHuman': createHuman,
+      '/fruit/:kind/price/:price': fruit
     });
 
-    server = resources.start('localhost', 1339);
+    api.format('/fruit/:kind/price/:price', 'text/plain', function (context, match) {
+      return {
+        'content-type': 'text/plain',
+        'response': 'Fruit: ' + context.result.kind + ' Price: ' + context.result.price
+      };
+    });
+
+    server = api.start(1339, 'localhost');
     done();
   });
 
   it('welcomes', function(done){
     getJSON('http://localhost:1339', function (error, res) {
       if(error) return done(error);
-      expect(res.welcome).to.equal(true);
-      expect(res.ok).to.not.exist;
+      expect(res.result.welcome).to.equal(true);
+      expect(res.result.endpoints).to.deep.equal([ '/human/:id', '/animal/:id', '/createHuman', '/fruit/:kind/price/:price', '/' ]);
       done();
     });
   });
@@ -42,14 +52,45 @@ describe('a server', function(){
 
   it('raises invalid resource error', function(done){
     getJSON('http://localhost:1339/foobar/1', function (error, res) {
-      expect(res.error.invalid_resource).to.be.true;
+      expect(res.error['not-found']).to.be.true
       done();
     });
   });
 
   it('raises not found error for unexisting data', function(done){
     getJSON('http://localhost:1339/animal/9', function (error, res) {
-      expect(res.error.not_found).to.be.true;
+      expect(res.error['not-found']).to.be.true
+      done();
+    });
+  });
+
+  it('allows formatting output based on accept header', function(done){
+    var options = {
+      url: 'http://localhost:1339/fruit/orange/price/2.5',
+      headers: {
+        accept: 'text/plain'
+      }
+    };
+
+    request(options, function (error, response, body) {
+      expect(error).to.not.exist;
+      expect(body).to.equal('Fruit: orange Price: 2.5');
+      done();
+    });
+  });
+
+  it('creates a new human by posting data', function(done){
+    var options = {
+      url: 'http://localhost:1339/createHuman',
+      form: { id: 22, name: 'foo', age: 30 }
+    };
+
+    request.post(options, function (error, response, body) {
+      expect(error).to.not.exist;
+      var re = JSON.parse(body);
+      expect(re.result.created).to.be.true;
+      expect(humans[22].name).to.equal('foo');
+      delete humans[22];
       done();
     });
   });
@@ -62,17 +103,16 @@ describe('a server', function(){
 });
 
 describe('a server with a default resource', function(){
-
-  var server;
+  var server, api;
 
   before(function(done){
-    resources({
+    api = circle({
       'human': human,
       'animal': animal,
-      '*': human
+      '/:id': human
     });
 
-    server = resources.start('localhost', 1339);
+    server = api.start(1339, 'localhost');
     done();
   });
 
@@ -89,7 +129,6 @@ describe('a server with a default resource', function(){
     server.close();
     done();
   });
-
 });
 
 var humans = {
@@ -102,12 +141,21 @@ var animals = {
   4: { name: 'Bar', age: 3 }
 };
 
-function human (reply, id) {
-  if (!humans[id]) reply({ not_found: true }, 404);
-  reply(undefined, humans[id]);
+function human (reply, params) {
+  if (!humans[params.id]) return reply({ message: { 'not-found': true } }, 404);
+  reply(undefined, humans[params.id]);
 }
 
-function animal (reply, id) {
-  if (!animals[id]) reply({ not_found: true }, 404);
-  reply(undefined, animals[id]);
+function animal (reply, params) {
+  if (!animals[params.id]) return reply({ message: { 'not-found': true } }, 404);
+  reply(undefined, animals[params.id]);
+}
+
+function fruit (reply, params) {
+  reply(undefined, { kind: params.kind, price: params.price });
+}
+
+function createHuman (reply, params, human, files) {
+  humans[human.id] = human;
+  reply(undefined, { created: true });
 }

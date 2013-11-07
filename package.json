@@ -1,6 +1,6 @@
 {
-  "name": "json-resources",
-  "version": "1.0.0",
+  "name": "circle",
+  "version": "0.0.0",
   "description": "Minimalistic JSON API Server",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "server"
   ],
   "repository": {
-    "url": "git@github.com:azer/json-resources.git",
+    "url": "git@github.com:azer/circle.git",
     "type": "git"
   },
   "author": "Azer Koçulu <azer@kodfabrik.com>",
@@ -20,7 +20,8 @@
   "dependencies": {
     "property": "0.0.0",
     "local-debug": "0.0.0",
-    "post-data": "0.0.0"
+    "post-data": "0.0.0",
+    "route-map": "0.0.0"
   },
   "devDependencies": {
     "fox": "*",

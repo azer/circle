@@ -1,56 +1,97 @@
-## json-resources
+## circle
 
-Minimalistic JSON API Server. Takes care of all you need to get done a simple API server.
-
-**qs and post data parsing isnt implemented yet**
+Minimalistic NodeJS API Server.
 
 ## Install
 
 ```bash
-$ npm install json-resources
+$ npm install circle
 ```
 
 ## Usage
 
-```js
-resources = require('json-resources')
+### Defining A Simple Server
 
-server = resources({
-  person: person,
-  company: company,
-  create: create,
+```js
+circle = require('circle')
+
+api = circle({
+  'person/:name/:surname': person,
+  'company': company,
+  'create': create,
   '*': person
 })
 
-server.start('localhost', 8080)
+api.start(8080, 'localhost')
+```
 
-function person (params, reply) {
-  params
-  // => ['foo', 'bar'] if request was sent to /person/foo/bar
-  params.qs
-  // => { parsed: 'querystrings' }
+### Routing
 
-  reply(undefined, { name: 'foo', age: 10 })
+Accepting requests to URLs like `/person/john/smith?email=john@smith.com`
+
+```js
+function person (reply, name, surname) {
+  reply(undefined, { name: name, surname: surname, email: reply.qs.email })
 }
+```
 
+This will output:
+
+```json
+{
+        "ok": true,
+        "result": [
+                {
+                        "name": "john",
+                        "surname": "smith",
+                        "email": "john@smith.com"
+                }
+        ]
+}
+```
+
+Producing errors:
+
+```
 function company (params, reply) {
   reply({ not_implemented: true }) // returns error
 }
+```
 
-function create (params, reply) {
-  params.data
+It handles POST data and file uploads nicely:
+
+```js
+function create (reply, params, post, files) {
+  params
   // => { name: 'foo', age: 21 }
+
+  files
+  // => { profilePicture: { path: '/tmp/foo.tar.gz', size: 1024 }}
 
   reply (undefined, { created: true })
 }
 ```
 
-Example requests to the server implemented above:
+### JSONP
 
+Circle outputs the response in JSONP format for requests made by passing "callback" parameter.
+
+### Formatting Output For Specific "Accept" Types
+
+Circle servers will output JSON by default. To format the output for specific "Accept" header:
+
+```js
+api.format('person', 'text/plain', function (error, person) {
+  if (error) return 'Error: ' + error.message;
+
+  return 'Name: ' + person.name + ' Surname: ' + person.surname + ' E-Mail: ' + person.email;
+});
 ```
-curl http://localhost:8080/person/1
-curl -X POST -H -d '{ name":"foo", "age":21 }' http://localhost:8000/create
-curl http://localhost:8080/person/1?callback=foobar
-curl http://localhost:8080/person/1.js?callback=foobar
-curl http://localhost:8080/person/1.json?callback=foobar
+
+Will output when `curl http://localhost:8080/person/john/smith?email=`
+
+```js
+Name: John
+Surname: Smith
+Email: john@smith.com
 ```
