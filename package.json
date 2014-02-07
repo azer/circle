@@ -4,7 +4,7 @@
   "description": "Minimalistic JSON API Server",
   "main": "index.js",
   "scripts": {
-    "test": "fox"
+    "test": "prova"
   },
   "keywords": [
     "json",
@@ -24,7 +24,7 @@
     "route-map": "0.0.0"
   },
   "devDependencies": {
-    "fox": "*",
+    "prova": "*",
     "request": "*",
     "get-json": "*"
   }
