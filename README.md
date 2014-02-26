@@ -71,6 +71,20 @@ function create (reply, match, post, files) {
 }
 ```
 
+### Streams
+
+Reply functions are writable streams:
+
+```js
+api = circle({
+  '/readme': readme
+})
+
+function readme (reply) {
+  fs.readFileStream('./README.md').pipe(reply)
+}
+```
+
 ### JSONP
 
 Circle outputs the response in JSONP format for requests made by passing "callback" parameter.
