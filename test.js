@@ -1,6 +1,7 @@
 var circle = require("./");
 var request = require("request");
 var getJSON = require("get-json");
+var fs = require("fs");
 
 describe('a server', function(){
   var server;
@@ -11,7 +12,9 @@ describe('a server', function(){
       '/human/:id': human,
       '/animal/:id': animal,
       '/createHuman': createHuman,
-      '/fruit/:kind/price/:price': fruit
+      '/fruit/:kind/price/:price': fruit,
+      '/readme': readme,
+      '/nonexisting': nonexisting
     });
 
     api.format('/fruit/:kind/price/:price', 'text/plain', function (context, match) {
@@ -29,7 +32,7 @@ describe('a server', function(){
     getJSON('http://localhost:1339', function (error, res) {
       if(error) return done(error);
       expect(res.result.welcome).to.equal(true);
-      expect(res.result.endpoints).to.deep.equal([ '/human/:id', '/animal/:id', '/createHuman', '/fruit/:kind/price/:price', '/' ]);
+      expect(res.result.endpoints).to.deep.equal([ '/human/:id', '/animal/:id', '/createHuman', '/fruit/:kind/price/:price', '/readme', '/nonexisting',  '/' ]);
       done();
     });
   });
@@ -47,6 +50,19 @@ describe('a server', function(){
         done();
       });
 
+    });
+  });
+
+  it('supports streaming', function(done){
+    getJSON('http://localhost:1339/readme', function (error, res) {
+      expect(error).to.not.exist;
+      expect(res.result).to.equal(fs.readFileSync('./README.md').toString());
+
+      getJSON('http://localhost:1339/nonexisting', function (error, res) {
+        expect(error).to.not.exist;
+        expect(res.error).to.equal("ENOENT, open \'./non-existing-file\'");
+        done();
+      });
     });
   });
 
@@ -159,4 +175,12 @@ function fruit (reply, match) {
 function createHuman (reply, match, human, files) {
   humans[human.id] = human;
   reply(undefined, { created: true, foo: match.qs.foo });
+}
+
+function readme (reply) {
+  fs.createReadStream('./README.md').pipe(reply);
+}
+
+function nonexisting (reply) {
+  fs.createReadStream('./non-existing-file').pipe(reply);
 }
