@@ -1,4 +1,4 @@
-## circle [![Build Status](https://travis-ci.org/azer/circle.png)](https://travis-ci.org/azer/circle)
+## circle
 
 Minimalistic NodeJS API Server.
 
