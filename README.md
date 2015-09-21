@@ -13,9 +13,9 @@ $ npm install circle
 ### Defining A Simple Server
 
 ```js
-circle = require('circle')
+var circle = require('circle')
 
-api = circle({
+var api = circle({
   '/person/:name/:surname': person,
   '/company/:id': company,
   '/': home
